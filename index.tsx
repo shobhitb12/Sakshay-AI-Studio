@@ -12,8 +12,8 @@ declare global {
 
 // --- Icons (SVGs) ---
 const Icons = {
-  Upload: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  Upload: ({ size = "h-8 w-8" }: { size?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={`${size} text-indigo-500`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
     </svg>
   ),
@@ -55,10 +55,10 @@ const Icons = {
 };
 
 // --- Config ---
-const MODEL_TEXT = "gemini-3-pro-preview"; // Gemini 3 Pro
-const MODEL_TEXT_FALLBACK = "gemini-2.5-flash"; // Fallback text model
-const MODEL_IMAGE = "gemini-3-pro-image-preview"; // Nano Banana Pro
-const MODEL_IMAGE_FALLBACK = "gemini-2.5-flash-image"; // Nano Banana (Fallback)
+const MODEL_TEXT = "gemini-3-pro-preview";
+const MODEL_TEXT_FALLBACK = "gemini-2.5-flash";
+const MODEL_IMAGE = "gemini-3-pro-image-preview";
+const MODEL_IMAGE_FALLBACK = "gemini-2.5-flash-image";
 const MAX_CHARS = 1000;
 
 // --- Types ---
@@ -91,6 +91,7 @@ const ImageUpload = ({
   onUpload,
   onRemove,
   required = false,
+  size = "large",
 }: {
   label: string;
   subLabel?: string;
@@ -98,6 +99,7 @@ const ImageUpload = ({
   onUpload: (base64: string) => void;
   onRemove: () => void;
   required?: boolean;
+  size?: "large" | "small";
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -116,19 +118,21 @@ const ImageUpload = ({
     }
   };
 
+  const isSmall = size === "small";
+
   return (
-    <div className="mb-6 group w-full">
-      <div className="flex justify-between items-center mb-3">
-        <h3 className="text-sm font-bold text-slate-800 tracking-tight">{label}</h3>
+    <div className={`mb-4 group w-full ${isSmall ? "flex-1" : ""}`}>
+      <div className="flex justify-between items-baseline mb-2">
+        <h3 className={`font-bold text-slate-800 tracking-tight ${isSmall ? "text-xs" : "text-sm"}`}>{label}</h3>
         {required ? (
-          <span className="px-2 py-1 bg-rose-50 text-rose-600 rounded-md text-[10px] font-bold uppercase tracking-wider border border-rose-100">Required</span>
+          <span className="px-1.5 py-0.5 bg-rose-50 text-rose-600 rounded-md text-[9px] font-extrabold uppercase tracking-wider border border-rose-100">Required</span>
         ) : (
-          <span className="text-xs font-medium text-slate-400">Optional</span>
+          <span className="text-[10px] font-semibold text-slate-400">Optional</span>
         )}
       </div>
       
       <div
-        className={`relative w-full aspect-[4/3] rounded-3xl transition-all duration-300 overflow-hidden shadow-sm
+        className={`relative w-full aspect-[4/3] rounded-2xl transition-all duration-300 overflow-hidden shadow-sm
         ${image ? "ring-0" : "border-2 border-dashed border-slate-200 bg-slate-50 hover:bg-white hover:border-indigo-400 cursor-pointer"}`}
       >
         <input
@@ -142,19 +146,17 @@ const ImageUpload = ({
         {image ? (
           <div className="relative w-full h-full group/image">
             <img src={image} alt={label} className="w-full h-full object-cover" />
-            
-            {/* Overlay actions */}
-            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
+            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
                <button 
                  onClick={() => fileInputRef.current?.click()}
-                 className="px-4 py-2 bg-white text-slate-900 rounded-full text-xs font-bold shadow-lg hover:scale-105"
+                 className="px-3 py-1.5 bg-white text-slate-900 rounded-full text-[10px] font-bold shadow-lg hover:scale-105"
                >
-                 Replace
+                 Change
                </button>
                {!required && (
                  <button 
                    onClick={(e) => { e.stopPropagation(); onRemove(); }}
-                   className="p-2 bg-rose-500 text-white rounded-full shadow-lg hover:scale-105"
+                   className="p-1.5 bg-rose-500 text-white rounded-full shadow-lg hover:scale-105"
                  >
                    <Icons.Delete />
                  </button>
@@ -162,12 +164,12 @@ const ImageUpload = ({
             </div>
           </div>
         ) : (
-          <div onClick={() => fileInputRef.current?.click()} className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 p-6 text-center">
-            <div className="p-3 bg-white rounded-2xl shadow-sm mb-3 group-hover:scale-110 group-hover:shadow-md transition-all">
-              <Icons.Upload />
+          <div onClick={() => fileInputRef.current?.click()} className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 p-2 text-center">
+            <div className={`${isSmall ? "p-1.5" : "p-3"} bg-white rounded-xl shadow-sm mb-2 group-hover:scale-110 group-hover:shadow-md transition-all`}>
+              <Icons.Upload size={isSmall ? "h-5 w-5" : "h-8 w-8"} />
             </div>
-            <p className="text-sm font-semibold text-slate-600 group-hover:text-indigo-600">Tap to upload</p>
-            {subLabel && <p className="text-xs mt-1 text-slate-400 font-medium">{subLabel}</p>}
+            <p className={`${isSmall ? "text-[10px]" : "text-xs"} font-bold text-slate-600 group-hover:text-indigo-600`}>Tap to upload</p>
+            {!isSmall && subLabel && <p className="text-[10px] mt-0.5 text-slate-400 font-medium">{subLabel}</p>}
           </div>
         )}
       </div>
@@ -178,7 +180,7 @@ const ImageUpload = ({
 // --- Main App Component ---
 function App() {
   const [apiKeyReady, setApiKeyReady] = useState(false);
-  const [step, setStep] = useState<number>(0); // 0: Upload, 1: Scene, 2: Vision, 3: Processing/Result
+  const [step, setStep] = useState<number>(0);
   
   // State
   const [mainImage, setMainImage] = useState<string | null>(null);
@@ -201,7 +203,6 @@ function App() {
       const hasKey = await window.aistudio.hasSelectedApiKey();
       setApiKeyReady(hasKey);
     } else {
-      // Fallback for environments where aistudio might not be injected immediately
       setApiKeyReady(true);
     }
   };
@@ -209,7 +210,6 @@ function App() {
   const handleSelectKey = async () => {
     if (window.aistudio && window.aistudio.openSelectKey) {
       await window.aistudio.openSelectKey();
-      // Assume success after closing dialog, or poll check
       checkApiKey();
     }
   };
@@ -234,15 +234,11 @@ function App() {
     if (!visionText.trim()) return;
     setIsEnhancingPrompt(true);
     try {
-      // Instantiate AI with current key
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      
-      const prompt = `You are a creative director. Rewrite and enhance the following user request into a detailed, artistic image generation prompt (under 800 chars). Maintain the core intent but add professional lighting, texture, and composition details suitable for a high-end AI generator.
-      
+      const prompt = `You are a creative director. Rewrite and enhance the following user request into a detailed, artistic image generation prompt (under 800 chars).
       User Request: "${visionText}"
       Selected Style: "${SCENES.find(s => s.id === selectedScene)?.name}"`;
 
-      // Try Gemini 3 Pro first
       try {
         const response = await ai.models.generateContent({
             model: MODEL_TEXT,
@@ -250,18 +246,14 @@ function App() {
         });
         if (response.text) setVisionText(response.text.trim());
       } catch (e) {
-        console.warn("Gemini 3 Pro (Text) failed, falling back to 2.5 Flash", e);
-        // Fallback to Gemini 2.5 Flash
         const response = await ai.models.generateContent({
             model: MODEL_TEXT_FALLBACK,
             contents: prompt
         });
         if (response.text) setVisionText(response.text.trim());
       }
-      
     } catch (e: any) {
-      console.error("Enhancement failed completely", e);
-      // If even fallback fails (e.g. no key at all), user will just have to use manual text
+      console.error("Enhancement failed", e);
     } finally {
       setIsEnhancingPrompt(false);
     }
@@ -269,83 +261,33 @@ function App() {
 
   const handleGenerate = async () => {
     if (!mainImage || !selectedScene) return;
-    
     setIsGenerating(true);
     setError(null);
     setStep(3);
 
     try {
-      // Instantiate AI with current key right before call
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
       const scene = SCENES.find(s => s.id === selectedScene);
-      
-      // Construct parts 
-      const parts: any[] = [];
-      
-      // 1. Main Image
-      parts.push({
-        inlineData: {
-          mimeType: "image/jpeg",
-          data: mainImage.split(",")[1]
-        }
-      });
+      const parts: any[] = [{
+        inlineData: { mimeType: "image/jpeg", data: mainImage.split(",")[1] }
+      }];
+      if (sceneRefImage) parts.push({ inlineData: { mimeType: "image/jpeg", data: sceneRefImage.split(",")[1] } });
+      if (modelRefImage) parts.push({ inlineData: { mimeType: "image/jpeg", data: modelRefImage.split(",")[1] } });
 
-      // 2. Refs if available
-      if (sceneRefImage) {
-        parts.push({
-          inlineData: {
-            mimeType: "image/jpeg",
-            data: sceneRefImage.split(",")[1]
-          }
-        });
-      }
-      if (modelRefImage) {
-        parts.push({
-          inlineData: {
-            mimeType: "image/jpeg",
-            data: modelRefImage.split(",")[1]
-          }
-        });
-      }
-
-      // 3. Prompt Construction
-      let promptText = `Transform the first image provided.
-      Style: ${scene?.name} (${scene?.description}).
-      Vision: ${visionText}
-      
-      Requirements:
-      - Photorealistic 4k quality.
-      - Perfect lighting and shadows matching the style.
-      - Keep the main subject from the first image identical in features.
-      `;
-
+      let promptText = `Transform the product photo. Style: ${scene?.name}. Vision: ${visionText}. Photorealistic 4k, identical product features.`;
       parts.push({ text: promptText });
 
       let response;
       let usedModel = "";
-
-      // ATTEMPT 1: Gemini 3 Pro Image (Nano Banana Pro)
       try {
          usedModel = "Gemini 3 Pro Image";
-         response = await ai.models.generateContent({ 
-            model: MODEL_IMAGE, 
-            contents: { role: "user", parts },
-         });
+         response = await ai.models.generateContent({ model: MODEL_IMAGE, contents: { role: "user", parts } });
       } catch (e: any) {
-         console.warn("Primary model failed, attempting fallback to Nano Banana (2.5)...", e);
-         
-         // ATTEMPT 2: Gemini 2.5 Flash Image (Nano Banana)
-         // This model is generally more available and faster
          usedModel = "Gemini 2.5 Flash Image";
-         response = await ai.models.generateContent({ 
-            model: MODEL_IMAGE_FALLBACK, 
-            contents: { role: "user", parts },
-         });
+         response = await ai.models.generateContent({ model: MODEL_IMAGE_FALLBACK, contents: { role: "user", parts } });
       }
       
       let foundImage = null;
-
       if (response && response.candidates && response.candidates[0].content && response.candidates[0].content.parts) {
         for (const part of response.candidates[0].content.parts) {
           if (part.inlineData) {
@@ -359,19 +301,15 @@ function App() {
         setGeneratedImage(foundImage);
         setUsedModelName(usedModel);
       } else {
-        console.error("No image generated", response?.text);
-        setError("The AI could not generate an image. The content might be filtered.");
+        setError("The AI could not generate an image. Please try a different description.");
         setStep(2); 
       }
-
     } catch (e: any) {
-      console.error(e);
-      // Handle permission denied by resetting key state ONLY if both models failed due to permissions
       if (e.status === 403 || e.message?.includes("PERMISSION_DENIED")) {
-        setError("Permission denied. Please ensure you have a valid API Key.");
+        setError("Permission denied. Check your API Key.");
         setApiKeyReady(false);
       } else {
-        setError("An error occurred during generation. Please try again.");
+        setError("Generation error. Please try again.");
       }
       setStep(2);
     } finally {
@@ -379,50 +317,21 @@ function App() {
     }
   };
 
-  // --- Views ---
-
-  // Key Selection Screen
-  if (!apiKeyReady) {
-    return (
-      <div className="ios-container items-center justify-center p-8 text-center bg-white">
-        <div className="mb-12 flex flex-col items-center gap-2">
-           <h1 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 tracking-tighter leading-tight text-center">
-             Sakshay International<br/><span className="text-indigo-600">AI Studio</span>
-           </h1>
-           <div className="h-1 w-20 bg-indigo-600 rounded-full mt-4"></div>
-        </div>
-        
-        <p className="text-slate-500 mb-10 leading-relaxed max-w-xs mx-auto text-sm font-medium">
-          Connect your account to access high-quality image generation models.
-        </p>
-        
-        <button 
-          onClick={handleSelectKey}
-          className="w-full max-w-sm py-4 bg-slate-900 text-white font-bold rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-transform"
-        >
-          <Icons.Key />
-          Connect Google Project
-        </button>
-        <p className="mt-6 text-xs text-slate-400">
-          Requires a paid Google Cloud Project for Pro models. <br/>
-          <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="underline hover:text-indigo-600">Learn more about billing</a>
-        </p>
-      </div>
-    );
-  }
-
   const Header = () => (
-    <div className="px-6 py-4 bg-white/80 backdrop-blur-xl border-b border-slate-100 flex items-center justify-between sticky top-0 z-20 h-[72px]">
+    <div className="px-6 py-5 bg-white/90 backdrop-blur-xl border-b border-slate-100 flex items-center justify-between sticky top-0 z-20 h-[80px]">
       {step > 0 ? (
-        <button onClick={handleBack} className="p-2 -ml-2 text-slate-600 hover:text-slate-900 rounded-full hover:bg-slate-100 transition-colors">
+        <button onClick={handleBack} className="p-2 -ml-2 text-slate-600 hover:text-slate-900 rounded-full hover:bg-slate-50">
           <Icons.ChevronLeft />
         </button>
       ) : <div className="w-10"></div>}
       
-      <div className="flex-1 flex items-center justify-center">
-         <div className="flex items-center gap-3">
-            <span className="font-extrabold text-slate-900 text-sm tracking-tight text-center leading-none">
-              Sakshay International <br/> <span className="text-indigo-600">AI Studio</span>
+      <div className="flex-1 text-center">
+         <div className="flex flex-col items-center">
+            <span className="font-extrabold text-slate-900 text-sm tracking-tight leading-none">
+              Sakshay International
+            </span>
+            <span className="text-indigo-600 font-black text-xs uppercase tracking-widest mt-0.5">
+              AI Studio
             </span>
          </div>
       </div>
@@ -432,18 +341,20 @@ function App() {
   );
 
   const renderStep0_Upload = () => (
-    <div className="px-6 pt-6 pb-24 animate-fadeIn">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-slate-900 mb-2">Upload Assets</h2>
-        <p className="text-slate-500 font-medium">Add your reference photos to get started.</p>
+    <div className="px-6 pt-8 pb-12 animate-fadeIn max-w-4xl mx-auto">
+      <div className="mb-10 text-center md:text-left">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">Upload Assets</h2>
+        <p className="text-slate-500 font-medium text-sm md:text-base leading-relaxed">
+          The foundation of your masterpiece. Upload your core product image and optional references for environment or poses.
+        </p>
       </div>
 
-      <div className="flex flex-col lg:flex-row lg:gap-12">
-        {/* Main Image Section - Larger on Desktop */}
-        <div className="flex-1">
+      <div className="flex flex-col md:flex-row gap-6 lg:gap-12">
+        {/* Main Image Section */}
+        <div className="flex-[1.5]">
           <ImageUpload
             label="Main Product"
-            subLabel="The star of the show"
+            subLabel="The high-resolution star of the show"
             image={mainImage}
             onUpload={setMainImage}
             onRemove={() => setMainImage(null)}
@@ -451,61 +362,66 @@ function App() {
           />
         </div>
 
-        {/* Divider for Mobile, Hidden on Desktop */}
-        <div className="h-px bg-slate-100 my-8 lg:hidden"></div>
-
         {/* Reference Images Section */}
-        <div className="flex-1">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="flex-1 flex flex-col sm:flex-row md:flex-col gap-4">
             <ImageUpload
               label="Scene Ref"
-              subLabel="Environment"
+              subLabel="Aesthetics"
               image={sceneRefImage}
               onUpload={setSceneRefImage}
               onRemove={() => setSceneRefImage(null)}
+              size="small"
             />
-
             <ImageUpload
               label="Model Ref"
-              subLabel="Pose/Style"
+              subLabel="Poses"
               image={modelRefImage}
               onUpload={setModelRefImage}
               onRemove={() => setModelRefImage(null)}
+              size="small"
             />
-          </div>
         </div>
+      </div>
+
+      <div className="mt-12 bg-indigo-50/50 rounded-2xl p-6 border border-indigo-100/50">
+        <h4 className="font-bold text-indigo-900 text-sm mb-2 flex items-center gap-2">
+          <Icons.Sparkles />
+          Pro Tip
+        </h4>
+        <p className="text-indigo-700/80 text-xs leading-relaxed">
+          Use high-resolution photos with good lighting. The better the source image, the more photorealistic the AI transformation will be.
+        </p>
       </div>
     </div>
   );
 
   const renderStep1_Scene = () => (
-    <div className="px-6 pt-6 pb-24 animate-fadeIn">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-slate-900 mb-2">Select Style</h2>
-        <p className="text-slate-500 font-medium">Choose a professional aesthetic.</p>
+    <div className="px-6 pt-8 pb-12 animate-fadeIn max-w-6xl mx-auto">
+      <div className="mb-10 text-center md:text-left">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3 text-center md:text-left">Select Style</h2>
+        <p className="text-slate-500 font-medium text-sm md:text-base text-center md:text-left">Choose a professional aesthetic for your product photoshoot.</p>
       </div>
 
-      {/* Responsive Grid: 2 cols on mobile, 3 on tablet, 4 on desktop */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
         {SCENES.map((scene) => (
           <button
             key={scene.id}
             onClick={() => setSelectedScene(scene.id)}
-            className={`p-5 rounded-3xl text-left transition-all duration-300 relative overflow-hidden group
+            className={`p-6 rounded-[32px] text-left transition-all duration-300 relative overflow-hidden group
               ${selectedScene === scene.id 
-                ? "ring-2 ring-indigo-600 ring-offset-2 bg-white shadow-xl scale-[1.02]" 
-                : "bg-white hover:bg-slate-50 border border-transparent shadow-sm hover:shadow-md"
+                ? "ring-4 ring-indigo-500/20 bg-white shadow-2xl scale-[1.03] border-indigo-500" 
+                : "bg-white hover:bg-slate-50 border border-slate-100 shadow-sm hover:shadow-xl"
               }`}
           >
-            <div className={`w-12 h-12 rounded-2xl mb-4 flex items-center justify-center text-2xl bg-gradient-to-br ${scene.gradient} shadow-inner`}>
+            <div className={`w-14 h-14 rounded-2xl mb-5 flex items-center justify-center text-3xl bg-gradient-to-br ${scene.gradient} shadow-inner`}>
               {scene.icon}
             </div>
             
-            <h3 className={`font-bold mb-1 ${selectedScene === scene.id ? "text-indigo-900" : "text-slate-900"}`}>{scene.name}</h3>
-            <p className="text-xs text-slate-500 leading-relaxed font-medium">{scene.description}</p>
+            <h3 className={`font-bold mb-1.5 ${selectedScene === scene.id ? "text-indigo-900" : "text-slate-900"}`}>{scene.name}</h3>
+            <p className="text-[11px] text-slate-500 leading-relaxed font-semibold uppercase tracking-tight">{scene.description}</p>
             
             {selectedScene === scene.id && (
-              <div className="absolute top-4 right-4 bg-indigo-600 rounded-full p-1 animate-scaleIn shadow-lg">
+              <div className="absolute top-4 right-4 bg-indigo-600 rounded-full p-1.5 animate-scaleIn shadow-lg">
                 <Icons.Check />
               </div>
             )}
@@ -516,64 +432,57 @@ function App() {
   );
 
   const renderStep2_Vision = () => (
-    <div className="px-6 pt-6 pb-24 animate-fadeIn">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-slate-900 mb-2">Creative Vision</h2>
-          <p className="text-slate-500 font-medium">Describe your dream result.</p>
+    <div className="px-6 pt-8 pb-12 animate-fadeIn max-w-4xl mx-auto">
+      <div className="mb-10 text-center md:text-left">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3">Creative Vision</h2>
+        <p className="text-slate-500 font-medium text-sm md:text-base leading-relaxed">
+          Describe specific details, moods, or objects you'd like to see. Our AI will blend these with your selected style.
+        </p>
+      </div>
+
+      <div className="bg-white p-6 md:p-10 rounded-[40px] shadow-2xl border border-slate-50 mb-6 relative overflow-hidden">
+        <div className="flex items-center gap-5 mb-8 pb-8 border-b border-slate-100">
+           {mainImage && (
+             <div className="relative shrink-0">
+               <img src={mainImage} className="w-20 h-20 rounded-2xl object-cover ring-4 ring-slate-50 shadow-md" />
+               <div className="absolute -bottom-2 -right-2 bg-indigo-600 text-white text-[9px] px-2 py-1 rounded-full font-black border-2 border-white shadow-sm">
+                 SRC
+               </div>
+             </div>
+           )}
+           <div>
+             <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest block mb-1">Active Style</span>
+             <p className="text-xl font-black text-slate-900 tracking-tight">{SCENES.find(s => s.id === selectedScene)?.name}</p>
+           </div>
         </div>
 
-        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-slate-100 mb-6 relative overflow-hidden">
-          {/* Summary Header */}
-          <div className="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
-             {mainImage && (
-               <div className="relative">
-                 <img src={mainImage} className="w-16 h-16 rounded-2xl object-cover ring-2 ring-slate-100" />
-                 <div className="absolute -bottom-1 -right-1 bg-indigo-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold border border-white">
-                   SRC
-                 </div>
-               </div>
-             )}
-             <div>
-               <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Applying Style</span>
-               <p className="text-lg font-bold text-slate-900">{SCENES.find(s => s.id === selectedScene)?.name}</p>
-             </div>
-          </div>
+        <div className="relative">
+          <textarea
+            value={visionText}
+            onChange={(e) => setVisionText(e.target.value.slice(0, MAX_CHARS))}
+            placeholder="E.g., Soft morning light filtering through a window, minimalist marble surface, high-end commercial feel..."
+            disabled={isEnhancingPrompt}
+            className="w-full h-56 md:h-72 p-6 bg-slate-50 rounded-3xl border-0 text-slate-900 placeholder-slate-400 focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all resize-none leading-relaxed text-sm md:text-lg font-medium"
+          />
+          
+          <button 
+            onClick={handleEnhancePrompt}
+            disabled={!visionText.trim() || isEnhancingPrompt}
+            className={`absolute bottom-4 right-4 flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-black transition-all shadow-md
+              ${!visionText.trim() ? "opacity-50 cursor-not-allowed bg-slate-200 text-slate-400" : "bg-slate-900 text-white hover:bg-black hover:scale-105"}`}
+          >
+            {isEnhancingPrompt ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <Icons.Sparkles />}
+            {isEnhancingPrompt ? "Enhancing..." : "Magic Optimize"}
+          </button>
+        </div>
 
-          {/* Text Area */}
-          <div className="relative">
-            <textarea
-              value={visionText}
-              onChange={(e) => setVisionText(e.target.value.slice(0, MAX_CHARS))}
-              placeholder="Describe the lighting, mood, colors, or specific elements you want to see..."
-              disabled={isEnhancingPrompt}
-              className="w-full h-48 md:h-64 p-4 bg-slate-50 rounded-2xl border-0 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all resize-none leading-relaxed text-sm md:text-base"
-            />
-            
-            {/* AI Enhance Button */}
-            <button 
-              onClick={handleEnhancePrompt}
-              disabled={!visionText.trim() || isEnhancingPrompt}
-              className={`absolute bottom-3 right-3 flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm
-                ${!visionText.trim() ? "opacity-50 cursor-not-allowed bg-slate-200 text-slate-400" : "bg-gradient-to-r from-indigo-500 to-violet-500 text-white hover:shadow-md hover:scale-105"}`}
-            >
-              {isEnhancingPrompt ? (
-                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                 <Icons.Sparkles />
-              )}
-              {isEnhancingPrompt ? "Enhancing..." : "Magic Enhance"}
-            </button>
-          </div>
-
-          <div className="text-right mt-3 flex justify-between items-center px-1">
-            <span className="text-[10px] font-medium text-indigo-500 bg-indigo-50 px-2 py-1 rounded-lg">
-               Auto-detect Model
-            </span>
-            <span className={`text-xs font-medium ${visionText.length >= MAX_CHARS ? "text-rose-500" : "text-slate-300"}`}>
-              {visionText.length}/{MAX_CHARS}
-            </span>
-          </div>
+        <div className="mt-4 flex justify-between items-center px-2">
+          <span className="text-[10px] font-black text-indigo-500 bg-indigo-50 px-3 py-1.5 rounded-full uppercase tracking-widest">
+             AI Logic Enabled
+          </span>
+          <span className={`text-xs font-bold ${visionText.length >= MAX_CHARS ? "text-rose-500" : "text-slate-300"}`}>
+            {visionText.length}/{MAX_CHARS}
+          </span>
         </div>
       </div>
     </div>
@@ -582,17 +491,15 @@ function App() {
   const renderStep3_Result = () => {
     if (isGenerating) {
       return (
-        <div className="flex flex-col items-center justify-center h-[60vh] px-8 text-center animate-fadeIn">
-          <div className="relative w-24 h-24 mb-8">
-            <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
-            <div className="absolute inset-0 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-2xl animate-pulse">⚡</span>
-            </div>
+        <div className="flex flex-col items-center justify-center min-h-[70vh] px-8 text-center animate-fadeIn">
+          <div className="relative w-32 h-32 mb-10">
+            <div className="absolute inset-0 border-8 border-slate-50 rounded-full"></div>
+            <div className="absolute inset-0 border-8 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+            <div className="absolute inset-0 flex items-center justify-center text-4xl">✨</div>
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-3">Creating Masterpiece</h2>
-          <p className="text-slate-500 font-medium max-w-[260px] mx-auto">
-            Enhancing photo with {SCENES.find(s => s.id === selectedScene)?.name} style...
+          <h2 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Crafting Your Visual</h2>
+          <p className="text-slate-500 font-bold max-w-sm mx-auto leading-relaxed">
+            Applying {SCENES.find(s => s.id === selectedScene)?.name} lighting and texture using Gemini Vision...
           </p>
         </div>
       );
@@ -600,133 +507,99 @@ function App() {
 
     if (error) {
        return (
-        <div className="flex flex-col items-center justify-center h-[60vh] px-8 text-center animate-fadeIn">
-           <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mb-6 shadow-sm">
-             <span className="text-3xl">⚠️</span>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] px-8 text-center animate-fadeIn">
+           <div className="w-24 h-24 bg-rose-50 text-rose-500 rounded-[40px] flex items-center justify-center mb-8 shadow-sm">
+             <span className="text-4xl">⚠️</span>
            </div>
-           <h3 className="text-xl font-bold text-slate-900 mb-2">Generation Failed</h3>
-           <p className="text-slate-500 mb-8 leading-relaxed text-sm">{error}</p>
+           <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tight">Visual Engine Error</h3>
+           <p className="text-slate-500 mb-10 leading-relaxed font-medium">{error}</p>
            <button 
-             onClick={() => {
-                if(error.includes("Permission denied")) {
-                   handleSelectKey();
-                } else {
-                   setStep(2);
-                }
-             }}
-             className="px-8 py-4 bg-slate-900 text-white font-bold rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all"
+             onClick={() => error.includes("Key") ? handleSelectKey() : setStep(2)}
+             className="px-10 py-5 bg-slate-900 text-white font-black rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all text-sm uppercase tracking-widest"
            >
-             {error.includes("Permission denied") ? "Connect Account" : "Try Again"}
+             {error.includes("Key") ? "Connect Project" : "Retry Engine"}
            </button>
         </div>
        )
     }
 
     return (
-      <div className="px-6 pt-6 pb-8 animate-fadeIn flex flex-col h-full lg:flex-row lg:items-start lg:gap-12 lg:justify-center">
-         {/* Left Side: Image */}
-         <div className="lg:flex-1 lg:max-w-2xl">
-           <div className="mb-6 text-center lg:text-left">
-              <h2 className="text-2xl font-bold text-slate-900">Your Masterpiece</h2>
-           </div>
-
-           <div className="relative w-full rounded-3xl overflow-hidden shadow-2xl ring-4 ring-white">
-             {generatedImage && <img src={generatedImage} className="w-full h-auto" alt="Generated" />}
-             <div className="absolute top-4 left-4">
-               <span className="bg-white/30 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full border border-white/40 shadow-lg">
-                 {usedModelName}
-               </span>
-             </div>
-           </div>
+      <div className="px-6 pt-10 pb-12 animate-fadeIn flex flex-col items-center max-w-5xl mx-auto">
+         <div className="mb-10 text-center">
+            <h2 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">Final Masterpiece</h2>
+            <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.2em]">{usedModelName} Processing</p>
          </div>
 
-         {/* Right Side: Actions */}
-         <div className="mt-8 lg:mt-14 lg:w-80 flex flex-col gap-4">
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 hidden lg:block mb-4">
-              <h4 className="font-bold text-slate-900 mb-2">Prompt Details</h4>
-              <p className="text-xs text-slate-500 line-clamp-6">{visionText}</p>
-            </div>
+         <div className="w-full relative rounded-[40px] overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.2)] ring-8 ring-white bg-slate-50">
+           {generatedImage && <img src={generatedImage} className="w-full h-auto object-cover" alt="Generated" />}
+         </div>
 
+         <div className="mt-12 w-full max-w-lg flex flex-col sm:flex-row gap-4">
+            <button 
+              onClick={() => window.location.reload()}
+              className="flex-1 py-5 rounded-3xl font-black text-sm uppercase tracking-widest bg-white text-slate-900 border-2 border-slate-100 hover:bg-slate-50"
+            >
+              Start Over
+            </button>
             <a 
               href={generatedImage || "#"}
-              download="sakshay-enhanced.jpg"
-              className="w-full py-4 rounded-2xl font-bold bg-indigo-600 text-white flex items-center justify-center gap-2 shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-colors"
+              download="enhanced-photo.jpg"
+              className="flex-[1.5] py-5 rounded-3xl font-black text-sm uppercase tracking-widest bg-indigo-600 text-white flex items-center justify-center gap-3 shadow-2xl shadow-indigo-200 hover:bg-indigo-700 hover:scale-[1.02]"
             >
-              Save Image
+              Export Visual
             </a>
-            
-            <button 
-              onClick={() => {
-                setStep(0);
-                setGeneratedImage(null);
-                setMainImage(null);
-                setSceneRefImage(null);
-                setModelRefImage(null);
-                setVisionText("");
-                setSelectedScene(null);
-                setUsedModelName("");
-              }}
-              className="w-full py-4 rounded-2xl font-bold bg-white text-slate-900 shadow-sm border border-slate-200 hover:bg-slate-50 transition-colors"
-            >
-              Start New
-            </button>
          </div>
       </div>
     );
   };
 
-  // --- Main Render ---
   return (
-    <div className="ios-container">
+    <div className="ios-container no-scrollbar">
       <Header />
       
-      <main className="flex-1 overflow-y-auto no-scrollbar relative flex flex-col">
+      <main className="flex-1 overflow-y-auto no-scrollbar relative">
         {step === 0 && renderStep0_Upload()}
         {step === 1 && renderStep1_Scene()}
         {step === 2 && renderStep2_Vision()}
         {step === 3 && renderStep3_Result()}
-        
-        {step !== 3 && <Footer />}
       </main>
 
-      {/* Modern Floating Action Button */}
+      {/* Action Button Area - Repositioned above Footer */}
       {step < 3 && !isGenerating && (
-        <div className="absolute bottom-0 left-0 right-0 p-6 pt-24 bg-gradient-to-t from-white via-white/90 to-transparent z-10 pointer-events-none flex justify-center">
+        <div className="p-8 pb-4 bg-white z-10 flex justify-center">
           <button
             onClick={step === 2 ? handleGenerate : handleNext}
             disabled={(step === 0 && !mainImage) || (step === 1 && !selectedScene)}
-            className={`w-full max-w-md py-4 rounded-2xl font-bold text-lg shadow-2xl transform transition-all active:scale-[0.98] flex items-center justify-center gap-2 pointer-events-auto
+            className={`w-full max-w-xl py-5 rounded-3xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl transform transition-all active:scale-[0.98] flex items-center justify-center gap-3
               ${(step === 0 && !mainImage) || (step === 1 && !selectedScene)
-                ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
-                : "bg-slate-900 text-white hover:bg-black"
+                ? "bg-slate-100 text-slate-300 cursor-not-allowed"
+                : "bg-slate-900 text-white hover:bg-black hover:shadow-indigo-500/20 shadow-xl"
               }`}
           >
             {step === 2 ? (
               <>
                 <Icons.Magic />
-                Generate
+                Initialize AI Engine
               </>
             ) : (
               <>
-                Continue
+                Continue Session
                 <Icons.ChevronRight />
               </>
             )}
           </button>
         </div>
       )}
+
+      {/* Persistent Application Footer */}
+      <footer className="py-8 text-center bg-white border-t border-slate-50">
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
+          &copy; 2025 Sakshay International AI Studio
+        </p>
+      </footer>
     </div>
   );
 }
-
-// Helper Footer component
-const Footer = () => (
-  <div className="py-8 text-center mt-auto">
-    <p className="text-xs font-semibold text-slate-400">
-      &copy; {new Date().getFullYear()} Sakshay International
-    </p>
-  </div>
-);
 
 const root = createRoot(document.getElementById("root")!);
 root.render(<App />);
