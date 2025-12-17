@@ -9,30 +9,51 @@
     <style>
       body {
         font-family: 'Inter', sans-serif;
-        background-color: #eef2f6; /* Softer background */
+        background-color: #f1f5f9;
         -webkit-font-smoothing: antialiased;
-        color: #1e293b;
+        color: #0f172a;
+        margin: 0;
+        min-height: 100vh;
       }
+      
       .ios-container {
-        max-width: 480px;
+        width: 100%;
         margin: 0 auto;
         background: #ffffff;
         min-height: 100vh;
         display: flex;
         flex-direction: column;
         position: relative;
+        transition: max-width 0.3s ease;
       }
-      @media (min-width: 480px) {
+
+      /* Tablet and Laptop adjustments */
+      @media (min-width: 768px) {
+        body {
+          padding: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
         .ios-container {
-          min-height: calc(100vh - 60px);
-          margin-top: 30px;
-          margin-bottom: 30px;
-          border-radius: 48px;
-          overflow: hidden;
+          max-width: 100%; /* Adapts to container, but constrained by max-w classes below if added, or hardcoded here */
+          min-height: calc(100vh - 40px);
+          height: auto;
+          border-radius: 32px;
           box-shadow: 
-            0 20px 25px -5px rgba(0, 0, 0, 0.1), 
-            0 8px 10px -6px rgba(0, 0, 0, 0.1),
-            0 0 0 8px rgba(255, 255, 255, 0.5); /* Outer glow ring */
+            0 25px 50px -12px rgba(0, 0, 0, 0.15), 
+            0 0 0 1px rgba(0, 0, 0, 0.02);
+          overflow: hidden;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .ios-container {
+          max-width: 1200px; /* Laptop width */
+          min-height: 85vh; /* Don't force full height if content is short on big screens, but usually good for app feel */
+          margin-top: auto;
+          margin-bottom: auto;
         }
       }
       
@@ -51,32 +72,19 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
-      
-      /* Glassmorphism utilities */
-      .glass {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-      }
-      
-      .glass-panel {
-        background: rgba(255, 255, 255, 0.6);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-      }
     </style>
   <script type="importmap">
 {
   "imports": {
-    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
-    "vite": "https://esm.sh/vite@^7.3.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
     "react": "https://esm.sh/react@^19.2.3",
-    "path": "https://esm.sh/path@^0.12.7",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "vite": "https://esm.sh/vite@^7.3.0",
     "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
-    "url": "https://esm.sh/url@^0.11.4",
-    "express": "https://esm.sh/express@^5.2.1"
+    "express": "https://esm.sh/express@^5.2.1",
+    "path": "https://esm.sh/path@^0.12.7",
+    "url": "https://esm.sh/url@^0.11.4"
   }
 }
 </script>

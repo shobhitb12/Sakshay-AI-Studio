@@ -117,7 +117,7 @@ const ImageUpload = ({
   };
 
   return (
-    <div className="mb-6 group">
+    <div className="mb-6 group w-full">
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-sm font-bold text-slate-800 tracking-tight">{label}</h3>
         {required ? (
@@ -385,19 +385,20 @@ function App() {
   if (!apiKeyReady) {
     return (
       <div className="ios-container items-center justify-center p-8 text-center bg-white">
-        <div className="w-24 h-24 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-indigo-200">
-           <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-            </svg>
+        <div className="mb-12 flex flex-col items-center gap-2">
+           <h1 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 tracking-tighter leading-tight text-center">
+             Sakshay International<br/><span className="text-indigo-600">AI Studio</span>
+           </h1>
+           <div className="h-1 w-20 bg-indigo-600 rounded-full mt-4"></div>
         </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 mb-4">Sakshay AI Studio</h1>
-        <p className="text-slate-500 mb-10 leading-relaxed">
+        
+        <p className="text-slate-500 mb-10 leading-relaxed max-w-xs mx-auto text-sm font-medium">
           Connect your account to access high-quality image generation models.
         </p>
         
         <button 
           onClick={handleSelectKey}
-          className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-transform"
+          className="w-full max-w-sm py-4 bg-slate-900 text-white font-bold rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-transform"
         >
           <Icons.Key />
           Connect Google Project
@@ -411,20 +412,22 @@ function App() {
   }
 
   const Header = () => (
-    <div className="px-6 py-5 bg-white/80 backdrop-blur-xl border-b border-slate-100 flex items-center justify-between sticky top-0 z-20">
+    <div className="px-6 py-4 bg-white/80 backdrop-blur-xl border-b border-slate-100 flex items-center justify-between sticky top-0 z-20 h-[72px]">
       {step > 0 ? (
         <button onClick={handleBack} className="p-2 -ml-2 text-slate-600 hover:text-slate-900 rounded-full hover:bg-slate-100 transition-colors">
           <Icons.ChevronLeft />
         </button>
-      ) : <div className="w-8"></div>}
+      ) : <div className="w-10"></div>}
       
-      <div className="flex-1 text-center">
-        <h1 className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-          Sakshay AI Studio
-        </h1>
+      <div className="flex-1 flex items-center justify-center">
+         <div className="flex items-center gap-3">
+            <span className="font-extrabold text-slate-900 text-sm tracking-tight text-center leading-none">
+              Sakshay International <br/> <span className="text-indigo-600">AI Studio</span>
+            </span>
+         </div>
       </div>
       
-      <div className="w-8"></div>
+      <div className="w-10"></div>
     </div>
   );
 
@@ -435,33 +438,42 @@ function App() {
         <p className="text-slate-500 font-medium">Add your reference photos to get started.</p>
       </div>
 
-      <ImageUpload
-        label="Main Product"
-        subLabel="The star of the show"
-        image={mainImage}
-        onUpload={setMainImage}
-        onRemove={() => setMainImage(null)}
-        required
-      />
+      <div className="flex flex-col lg:flex-row lg:gap-12">
+        {/* Main Image Section - Larger on Desktop */}
+        <div className="flex-1">
+          <ImageUpload
+            label="Main Product"
+            subLabel="The star of the show"
+            image={mainImage}
+            onUpload={setMainImage}
+            onRemove={() => setMainImage(null)}
+            required
+          />
+        </div>
 
-      <div className="h-px bg-slate-100 my-8"></div>
+        {/* Divider for Mobile, Hidden on Desktop */}
+        <div className="h-px bg-slate-100 my-8 lg:hidden"></div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <ImageUpload
-          label="Scene Ref"
-          subLabel="Environment"
-          image={sceneRefImage}
-          onUpload={setSceneRefImage}
-          onRemove={() => setSceneRefImage(null)}
-        />
+        {/* Reference Images Section */}
+        <div className="flex-1">
+          <div className="grid grid-cols-2 gap-4">
+            <ImageUpload
+              label="Scene Ref"
+              subLabel="Environment"
+              image={sceneRefImage}
+              onUpload={setSceneRefImage}
+              onRemove={() => setSceneRefImage(null)}
+            />
 
-        <ImageUpload
-          label="Model Ref"
-          subLabel="Pose/Style"
-          image={modelRefImage}
-          onUpload={setModelRefImage}
-          onRemove={() => setModelRefImage(null)}
-        />
+            <ImageUpload
+              label="Model Ref"
+              subLabel="Pose/Style"
+              image={modelRefImage}
+              onUpload={setModelRefImage}
+              onRemove={() => setModelRefImage(null)}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -473,7 +485,8 @@ function App() {
         <p className="text-slate-500 font-medium">Choose a professional aesthetic.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* Responsive Grid: 2 cols on mobile, 3 on tablet, 4 on desktop */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {SCENES.map((scene) => (
           <button
             key={scene.id}
@@ -504,61 +517,63 @@ function App() {
 
   const renderStep2_Vision = () => (
     <div className="px-6 pt-6 pb-24 animate-fadeIn">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-slate-900 mb-2">Creative Vision</h2>
-        <p className="text-slate-500 font-medium">Describe your dream result.</p>
-      </div>
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-slate-900 mb-2">Creative Vision</h2>
+          <p className="text-slate-500 font-medium">Describe your dream result.</p>
+        </div>
 
-      <div className="bg-white p-5 rounded-3xl shadow-lg border border-slate-100 mb-6 relative overflow-hidden">
-        {/* Summary Header */}
-        <div className="flex items-center gap-4 mb-5 pb-5 border-b border-slate-100">
-           {mainImage && (
-             <div className="relative">
-               <img src={mainImage} className="w-14 h-14 rounded-2xl object-cover ring-2 ring-slate-100" />
-               <div className="absolute -bottom-1 -right-1 bg-indigo-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold border border-white">
-                 SRC
+        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-slate-100 mb-6 relative overflow-hidden">
+          {/* Summary Header */}
+          <div className="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100">
+             {mainImage && (
+               <div className="relative">
+                 <img src={mainImage} className="w-16 h-16 rounded-2xl object-cover ring-2 ring-slate-100" />
+                 <div className="absolute -bottom-1 -right-1 bg-indigo-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold border border-white">
+                   SRC
+                 </div>
                </div>
+             )}
+             <div>
+               <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Applying Style</span>
+               <p className="text-lg font-bold text-slate-900">{SCENES.find(s => s.id === selectedScene)?.name}</p>
              </div>
-           )}
-           <div>
-             <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Applying Style</span>
-             <p className="text-base font-bold text-slate-900">{SCENES.find(s => s.id === selectedScene)?.name}</p>
-           </div>
-        </div>
+          </div>
 
-        {/* Text Area */}
-        <div className="relative">
-          <textarea
-            value={visionText}
-            onChange={(e) => setVisionText(e.target.value.slice(0, MAX_CHARS))}
-            placeholder="Describe the lighting, mood, colors, or specific elements you want to see..."
-            disabled={isEnhancingPrompt}
-            className="w-full h-48 p-4 bg-slate-50 rounded-2xl border-0 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all resize-none leading-relaxed text-sm"
-          />
-          
-          {/* AI Enhance Button */}
-          <button 
-            onClick={handleEnhancePrompt}
-            disabled={!visionText.trim() || isEnhancingPrompt}
-            className={`absolute bottom-3 right-3 flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm
-              ${!visionText.trim() ? "opacity-50 cursor-not-allowed bg-slate-200 text-slate-400" : "bg-gradient-to-r from-indigo-500 to-violet-500 text-white hover:shadow-md hover:scale-105"}`}
-          >
-            {isEnhancingPrompt ? (
-               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            ) : (
-               <Icons.Sparkles />
-            )}
-            {isEnhancingPrompt ? "Enhancing..." : "Magic Enhance"}
-          </button>
-        </div>
+          {/* Text Area */}
+          <div className="relative">
+            <textarea
+              value={visionText}
+              onChange={(e) => setVisionText(e.target.value.slice(0, MAX_CHARS))}
+              placeholder="Describe the lighting, mood, colors, or specific elements you want to see..."
+              disabled={isEnhancingPrompt}
+              className="w-full h-48 md:h-64 p-4 bg-slate-50 rounded-2xl border-0 text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500/20 focus:bg-white transition-all resize-none leading-relaxed text-sm md:text-base"
+            />
+            
+            {/* AI Enhance Button */}
+            <button 
+              onClick={handleEnhancePrompt}
+              disabled={!visionText.trim() || isEnhancingPrompt}
+              className={`absolute bottom-3 right-3 flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm
+                ${!visionText.trim() ? "opacity-50 cursor-not-allowed bg-slate-200 text-slate-400" : "bg-gradient-to-r from-indigo-500 to-violet-500 text-white hover:shadow-md hover:scale-105"}`}
+            >
+              {isEnhancingPrompt ? (
+                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                 <Icons.Sparkles />
+              )}
+              {isEnhancingPrompt ? "Enhancing..." : "Magic Enhance"}
+            </button>
+          </div>
 
-        <div className="text-right mt-2 flex justify-between items-center px-1">
-          <span className="text-[10px] font-medium text-indigo-500 bg-indigo-50 px-2 py-1 rounded-lg">
-             Auto-detect Model
-          </span>
-          <span className={`text-xs font-medium ${visionText.length >= MAX_CHARS ? "text-rose-500" : "text-slate-300"}`}>
-            {visionText.length}/{MAX_CHARS}
-          </span>
+          <div className="text-right mt-3 flex justify-between items-center px-1">
+            <span className="text-[10px] font-medium text-indigo-500 bg-indigo-50 px-2 py-1 rounded-lg">
+               Auto-detect Model
+            </span>
+            <span className={`text-xs font-medium ${visionText.length >= MAX_CHARS ? "text-rose-500" : "text-slate-300"}`}>
+              {visionText.length}/{MAX_CHARS}
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -567,12 +582,12 @@ function App() {
   const renderStep3_Result = () => {
     if (isGenerating) {
       return (
-        <div className="flex flex-col items-center justify-center h-[70vh] px-8 text-center animate-fadeIn">
+        <div className="flex flex-col items-center justify-center h-[60vh] px-8 text-center animate-fadeIn">
           <div className="relative w-24 h-24 mb-8">
             <div className="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
             <div className="absolute inset-0 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-2xl animate-pulse">✨</span>
+              <span className="text-2xl animate-pulse">⚡</span>
             </div>
           </div>
           <h2 className="text-2xl font-bold text-slate-900 mb-3">Creating Masterpiece</h2>
@@ -585,7 +600,7 @@ function App() {
 
     if (error) {
        return (
-        <div className="flex flex-col items-center justify-center h-[70vh] px-8 text-center animate-fadeIn">
+        <div className="flex flex-col items-center justify-center h-[60vh] px-8 text-center animate-fadeIn">
            <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mb-6 shadow-sm">
              <span className="text-3xl">⚠️</span>
            </div>
@@ -608,12 +623,13 @@ function App() {
     }
 
     return (
-      <div className="px-6 pt-6 pb-8 animate-fadeIn flex flex-col h-full">
-         <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold text-slate-900">Your Masterpiece</h2>
-         </div>
+      <div className="px-6 pt-6 pb-8 animate-fadeIn flex flex-col h-full lg:flex-row lg:items-start lg:gap-12 lg:justify-center">
+         {/* Left Side: Image */}
+         <div className="lg:flex-1 lg:max-w-2xl">
+           <div className="mb-6 text-center lg:text-left">
+              <h2 className="text-2xl font-bold text-slate-900">Your Masterpiece</h2>
+           </div>
 
-         <div className="flex-1 flex flex-col items-center justify-start min-h-[400px]">
            <div className="relative w-full rounded-3xl overflow-hidden shadow-2xl ring-4 ring-white">
              {generatedImage && <img src={generatedImage} className="w-full h-auto" alt="Generated" />}
              <div className="absolute top-4 left-4">
@@ -624,7 +640,21 @@ function App() {
            </div>
          </div>
 
-         <div className="mt-8 grid grid-cols-2 gap-4">
+         {/* Right Side: Actions */}
+         <div className="mt-8 lg:mt-14 lg:w-80 flex flex-col gap-4">
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 hidden lg:block mb-4">
+              <h4 className="font-bold text-slate-900 mb-2">Prompt Details</h4>
+              <p className="text-xs text-slate-500 line-clamp-6">{visionText}</p>
+            </div>
+
+            <a 
+              href={generatedImage || "#"}
+              download="sakshay-enhanced.jpg"
+              className="w-full py-4 rounded-2xl font-bold bg-indigo-600 text-white flex items-center justify-center gap-2 shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-colors"
+            >
+              Save Image
+            </a>
+            
             <button 
               onClick={() => {
                 setStep(0);
@@ -638,15 +668,8 @@ function App() {
               }}
               className="w-full py-4 rounded-2xl font-bold bg-white text-slate-900 shadow-sm border border-slate-200 hover:bg-slate-50 transition-colors"
             >
-              Restart
+              Start New
             </button>
-            <a 
-              href={generatedImage || "#"}
-              download="sakshay-enhanced.jpg"
-              className="w-full py-4 rounded-2xl font-bold bg-indigo-600 text-white flex items-center justify-center gap-2 shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-colors"
-            >
-              Save Image
-            </a>
          </div>
       </div>
     );
@@ -657,20 +680,22 @@ function App() {
     <div className="ios-container">
       <Header />
       
-      <main className="flex-1 overflow-y-auto no-scrollbar relative">
+      <main className="flex-1 overflow-y-auto no-scrollbar relative flex flex-col">
         {step === 0 && renderStep0_Upload()}
         {step === 1 && renderStep1_Scene()}
         {step === 2 && renderStep2_Vision()}
         {step === 3 && renderStep3_Result()}
+        
+        {step !== 3 && <Footer />}
       </main>
 
       {/* Modern Floating Action Button */}
       {step < 3 && !isGenerating && (
-        <div className="absolute bottom-0 left-0 right-0 p-6 pt-24 bg-gradient-to-t from-white via-white/90 to-transparent z-10 pointer-events-none">
+        <div className="absolute bottom-0 left-0 right-0 p-6 pt-24 bg-gradient-to-t from-white via-white/90 to-transparent z-10 pointer-events-none flex justify-center">
           <button
             onClick={step === 2 ? handleGenerate : handleNext}
             disabled={(step === 0 && !mainImage) || (step === 1 && !selectedScene)}
-            className={`w-full py-4 rounded-2xl font-bold text-lg shadow-2xl transform transition-all active:scale-[0.98] flex items-center justify-center gap-2 pointer-events-auto
+            className={`w-full max-w-md py-4 rounded-2xl font-bold text-lg shadow-2xl transform transition-all active:scale-[0.98] flex items-center justify-center gap-2 pointer-events-auto
               ${(step === 0 && !mainImage) || (step === 1 && !selectedScene)
                 ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
                 : "bg-slate-900 text-white hover:bg-black"
@@ -693,6 +718,15 @@ function App() {
     </div>
   );
 }
+
+// Helper Footer component
+const Footer = () => (
+  <div className="py-8 text-center mt-auto">
+    <p className="text-xs font-semibold text-slate-400">
+      &copy; {new Date().getFullYear()} Sakshay International
+    </p>
+  </div>
+);
 
 const root = createRoot(document.getElementById("root")!);
 root.render(<App />);
